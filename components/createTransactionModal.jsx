@@ -4,13 +4,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
 
 
-const CreateTransactionModalContent = ({ fetchTransactionData }) => {
+const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_category }) => {
     const [showCategoryDialog, setShowCategoryDialog] = useState(false);
-    const [categories, setCategories] = useState([]);
     const [showDialog, setShowDialog] = useState(false);
     const [transactionFormData, setTransactionFormData] = useState({
       amount: "",
@@ -30,20 +29,20 @@ const CreateTransactionModalContent = ({ fetchTransactionData }) => {
     const handleCategoryInputChange = (name, value) => {;
         setCategoryFormData({ ...categoryFormData, [name]: value});
     };
-            
+
     const handleCreateCategory = async () => {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error("No authentication token found.");
 
-        const response = fetch("http://127.0.0.1:8000/api/v1/transaction/category", {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/transaction/category", {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(categoryFormData),
-        }).then(async (data) => {
-        setShowCategoryDialog(false);
-        setCategories([...categories, (await data.json()).data]);
         });
-        setTransactionFormData({ ...transactionFormData, ["category_id"]: response.data.id})
+        const data = await response.json();
+        setShowCategoryDialog(false);
+        add_category(data.data)
+        setTransactionFormData({ ...transactionFormData, category_id: data.data.id })
     };
 
 
@@ -66,29 +65,6 @@ const CreateTransactionModalContent = ({ fetchTransactionData }) => {
             category_id: ""      
         })
     };
-
-    const fetchCategoryData = async () => {
-        try {
-            const token = localStorage.getItem('authToken');
-            if (!token) throw new Error("No authentication token found.");
-
-            const response = await fetch('http://127.0.0.1:8000/api/v1/transaction/categories', {
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            })
-
-            const data = await response.json();
-            setCategories(data.data);
-            
-            if (!response.ok) throw new Error('Failed to fetch categories');
-        } catch (err) {
-            setError(err.message);
-        }
-    }
-
-
-    useEffect(() => {
-        fetchCategoryData();
-    }, []);
 
 
     return (
@@ -137,7 +113,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData }) => {
     
                 {/* Category Select */}
                 <div className="flex justify-between items-center mt-4">
-                    <Select onValueChange={(value) => handleInputChange('category_id', value)}>
+                    <Select value={`${transactionFormData.category_id}`} onValueChange={(value) => handleInputChange('category_id', value)}>
                         <SelectTrigger className="w-[280px] bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <SelectValue placeholder="Vyberte Kategóriu" />
                         </SelectTrigger>

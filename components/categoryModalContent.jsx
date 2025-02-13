@@ -5,10 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import React, { useState, useEffect } from 'react';
 
-const CategoryModalContent = ({ fetchTransactionData }) => {
+const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => {
     const [showTableModal, setShowTableModal] = useState(false); // Controls the table modal
     const [showFormModal, setShowFormModal] = useState(false); // Controls the create/edit modal
-    const [categories, setCategories] = useState([]);
     const [categoryFormData, setCategoryFormData] = useState({
         name: "",
         budget: "",
@@ -17,18 +16,6 @@ const CategoryModalContent = ({ fetchTransactionData }) => {
 
     const handleInputChange = (name, value) => {
         setCategoryFormData({ ...categoryFormData, [name]: value });
-    };
-
-    const fetchCategories = async () => {
-        const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
-
-        const response = await fetch('http://127.0.0.1:8000/api/v1/transaction/categories', {
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        });
-
-        const data = await response.json();
-        setCategories(data.data);
     };
 
     const handleCreateOrUpdateCategory = async () => {
@@ -47,7 +34,7 @@ const CategoryModalContent = ({ fetchTransactionData }) => {
             body: JSON.stringify(categoryFormData),
         });
 
-        fetchCategories(); // Refresh the table
+        refetch()
         setShowFormModal(false); // Close the form modal
         setEditingCategoryId(null); // Reset editing state
         fetchTransactionData()
@@ -68,12 +55,6 @@ const CategoryModalContent = ({ fetchTransactionData }) => {
         setEditingCategoryId(null); // No category is being edited
         setShowFormModal(true); // Open the form modal
     };
-
-    useEffect(() => {
-        if (showTableModal) {
-            fetchCategories(); // Fetch categories when the table modal is opened
-        }
-    }, [showTableModal]);
 
     return (
         <div>
@@ -104,27 +85,29 @@ const CategoryModalContent = ({ fetchTransactionData }) => {
                         </div>
                     </DialogHeader>
     
-                    {/* Table to display categories */}
-                    <table className="w-full bg-gray-700 text-white rounded-md overflow-hidden">
-                        <thead className="bg-gray-600">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                                <th className="px-4 py-3 text-left text-sm font-medium">Budget</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {categories.map((category) => (
-                                <tr
-                                    key={category.id}
-                                    className="cursor-pointer hover:bg-gray-600 transition-colors"
-                                    onClick={() => handleEditCategory(category)}
-                                >
-                                    <td className="px-4 py-3">{category.name}</td>
-                                    <td className="px-4 py-3">{category.budget}</td>
+                    <div className="max-h-[70vh] overflow-y-scroll">
+                        {/* Table to display categories */}
+                        <table className="w-full bg-gray-700 text-white rounded-md relative">
+                            <thead className="bg-gray-600 sticky top-0">
+                                <tr>
+                                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium">Budget</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {categories.map((category) => (
+                                    <tr
+                                        key={category.id}
+                                        className="cursor-pointer hover:bg-gray-600 transition-colors"
+                                        onClick={() => handleEditCategory(category)}
+                                    >
+                                        <td className="px-4 py-3">{category.name}</td>
+                                        <td className="px-4 py-3">{category.budget}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </DialogContent>
             </Dialog>
     
