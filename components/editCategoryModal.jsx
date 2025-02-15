@@ -43,7 +43,7 @@ const EditCategoryModal = ({ data, refetch, category, filter }) => {
     return (
         <Dialog open={showFormModal} onOpenChange={setShowFormModal}>
             <DialogTrigger asChild>
-                <tr className="border-b border-gray-700 ">
+                <tr className="border-b border-gray-700 hover:bg-gray-700 transition">
                     <td className="p-3">{category}</td>
                     <td className={`p-3 font-bold ${data.total_amount >= 0 ? 'text-green-500' : 'text-red-500'}`}>{data.total_amount >= 0 ? '+' : '-'} {Math.abs(data.total_amount).toFixed(2)} €</td>
                     {
