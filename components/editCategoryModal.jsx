@@ -11,32 +11,48 @@ const EditCategoryModal = ({ data, refetch, category, filter }) => {
         name: category,
         budget: data.budget,
     });
-    const [editingCategoryId, setEditingCategoryId] = useState(null);
 
     const handleInputChange = (name, value) => {
         setCategoryFormData({ ...categoryFormData, [name]: value });
     };
 
-    const handleCreateOrUpdateCategory = async () => {
+    const validateCategoryForm = () => {
+        const newErrors = {};
+        if (!categoryFormData.name) newErrors.name = "Meno je povinné.";
+        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Rozpočet musí byť číslo.";
+        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Rozpočet musí byť vačší ako nula"
+
+        setErrors({ ...errors, category: newErrors });
+        return Object.keys(newErrors).length === 0; // Return true if no errors
+    };
+
+    const [errors, setErrors] = useState({
+        category: {}
+    });
+
+
+
+    const handleEditCategory = async () => {
+        if (!validateCategoryForm()) return;
+
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
-        const url = editingCategoryId
-            ? `http://127.0.0.1:8000/api/v1/transaction/category/${editingCategoryId}`
-            : 'http://127.0.0.1:8000/api/v1/transaction/category';
-
-        const method = editingCategoryId ? 'POST' : 'POST';
-
-        await fetch(url, {
-            method: method,
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/category/${data.id}`, {
+            method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(categoryFormData),
         });
 
+        if (response.status === 422) {
+            const data = await response.json();
+            setErrors({ ...errors, category: { name: data.message} });
+            return;
+        }
+
+
         refetch()
         setShowFormModal(false);
-        setEditingCategoryId(null);
-        add_category({ categoryFormData })
         setCategoryFormData({ name: "", budget: "" }); // Reset form data
     };
 
@@ -56,40 +72,45 @@ const EditCategoryModal = ({ data, refetch, category, filter }) => {
             <DialogContent className="bg-gray-800 text-white rounded-md">
                 <DialogHeader>
                     <DialogTitle className="text-lg font-bold">
-                        {editingCategoryId ? 'Edit Category' : 'Create New Category'}
+                        Upravte Kategóriu
                     </DialogTitle>
                     <DialogDescription className="text-sm text-gray-400">
-                        {editingCategoryId
-                            ? 'Edit the details of the category.'
-                            : 'Fill in the details to create a new category.'}
+                            Upravte údaje kategórie
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Name Input */}
-                <Input
-                    name="name"
-                    placeholder="Name of Your Category"
-                    value={categoryFormData.name || ""}
-                    onChange={(e) => handleInputChange(e.target.name, e.target.value)}
-                    className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div>
+                        <Input
+                            name="name"
+                            placeholder="Názov vašej kategórie"
+                            value={categoryFormData.name || ""}
+                            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+                            className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {errors.category.name && <p className="text-red-500 text-sm mt-1">{errors.category.name}</p>}
+                    </div>
 
-                {/* Budget Input */}
-                <Input
-                    name="budget"
-                    type="number"
-                    placeholder="Optional monthly budget for your category"
-                    value={categoryFormData.budget || ""}
-                    onChange={(e) => handleInputChange(e.target.name, e.target.value)}
-                    className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+    
+                    {/* Budget Input */}
+                    <div>
+                        <Input
+                            name="budget"
+                            type="number"
+                            placeholder="Mesačný rozpočet pre vašu kategóriu (nepovinné pole)"
+                            value={categoryFormData.budget || ""}
+                            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+                            className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
 
+                        {errors.category.budget && <p className="text-red-500 text-sm mt-1">{errors.category.budget}</p>}
+                    </div>
                 {/* Submit Button */}
                 <Button
-                    onClick={handleCreateOrUpdateCategory}
+                    onClick={handleEditCategory}
                     className="bg-blue-500 hover:bg-blue-600 transition-colors mt-4"
                 >
-                    Create Category
+                    Upravtiť Kategóriu
                 </Button>
             </DialogContent>
         </Dialog>

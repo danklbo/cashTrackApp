@@ -41,9 +41,9 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
 
     const validateTransactionForm = () => {
         const newErrors = {};
-        if (!transactionFormData.amount) newErrors.amount = "Amount is required.";
-        if (!transactionFormData.description) newErrors.description = "Description is required.";
-        if (!transactionFormData.category_id) newErrors.category_id = "Category is required.";
+        if (!transactionFormData.amount) newErrors.amount = "Suma je povinná.";
+        if (!transactionFormData.description) newErrors.description = "Popis je povinný.";
+        if (!transactionFormData.category_id) newErrors.category_id = "Kategória je povinná.";
 
         setErrors({ ...errors, transaction: newErrors });
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -51,9 +51,9 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
 
     const validateCategoryForm = () => {
         const newErrors = {};
-        if (!categoryFormData.name) newErrors.name = "Name is required.";
-        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Budget must be a number.";
-        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Budget musi byt vacsi ako nula"
+        if (!categoryFormData.name) newErrors.name = "Meno je povinné.";
+        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Rozpočet musí byť číslo.";
+        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Rozpočet musí byť vačší ako nula"
 
         setErrors({ ...errors, category: newErrors });
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -63,7 +63,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
         if (!validateCategoryForm()) return;
 
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
             const response = await fetch("http://127.0.0.1:8000/api/v1/transaction/category", {
@@ -90,7 +90,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
         if (!validateTransactionForm()) return;
 
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         fetch("http://127.0.0.1:8000/api/v1/transaction", {
             method: "POST",
@@ -113,15 +113,15 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
                 <Button className="ml-auto bg-gray-700 hover:bg-gray-600 transition-colors">
-                    Create Transaction
+                    Vytvoriť Transakciu
                 </Button>
             </DialogTrigger>
 
             <DialogContent className="bg-gray-800 text-white rounded-md">
                 <DialogHeader>
-                    <DialogTitle className="text-lg font-bold">Create Transaction</DialogTitle>
+                    <DialogTitle className="text-lg font-bold">Vytvoriť Transakciu</DialogTitle>
                     <DialogDescription className="text-sm text-gray-400">
-                        Fill in the details to create a new transaction.
+                        Vyplňte údaje pre vytvorenie transakcie.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -130,7 +130,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                     <Input
                         name="amount"
                         type="number"
-                        placeholder="Amount"
+                        placeholder="Suma"
                         value={transactionFormData.amount}
                         onChange={(e) => handleInputChange(e.target.name, e.target.value)}
                         className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -142,7 +142,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                 <div>
                     <Input
                         name="description"
-                        placeholder="Description"
+                        placeholder="Popis"
                         value={transactionFormData.description}
                         onChange={(e) => handleInputChange(e.target.name, e.target.value)}
                         className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -191,14 +191,14 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                                 className="bg-blue-500 hover:bg-blue-600 transition-colors"
                                 onClick={() => setShowCategoryDialog(true)}
                             >
-                                Create Category
+                                Vytvoriť Kategóriu
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="bg-gray-800 text-white rounded-md">
                             <DialogHeader>
-                                <DialogTitle className="text-lg font-bold">Create Category</DialogTitle>
+                                <DialogTitle className="text-lg font-bold">Vytvoriť Kategóriu</DialogTitle>
                                 <DialogDescription className="text-sm text-gray-400">
-                                    Fill in the details to create a new category.
+                                    Vyplňte údaje pre vytvorenie kategórie.
                                 </DialogDescription>
                             </DialogHeader>
 
@@ -206,7 +206,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                             <div>
                                 <Input
                                     name="name"
-                                    placeholder="Name of Your Category"
+                                    placeholder="Názov vašej kategórie"
                                     value={categoryFormData.name}
                                     onChange={(e) => handleCategoryInputChange(e.target.name, e.target.value)}
                                     className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -219,7 +219,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                                 <Input
                                     name="budget"
                                     type="number"
-                                    placeholder="Optional monthly budget for your category"
+                                    placeholder="Mesačný rozpočet pre vašu kategóriu (nepovinné pole)"
                                     value={categoryFormData.budget}
                                     onChange={(e) => handleCategoryInputChange(e.target.name, e.target.value)}
                                     className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -232,7 +232,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                                 onClick={handleCreateCategory}
                                 className="bg-blue-500 hover:bg-blue-600 transition-colors mt-4"
                             >
-                                Create Category
+                                Vytvoriť Kategóriu
                             </Button>
                         </DialogContent>
                     </Dialog>
@@ -243,7 +243,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                     onClick={handleSubmit}
                     className="bg-blue-500 hover:bg-blue-600 transition-colors mt-6"
                 >
-                    Submit
+                    Vytvoriť
                 </Button>
             </DialogContent>
         </Dialog>

@@ -44,9 +44,9 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
     // Validate transaction form
     const validateTransactionForm = () => {
         const newErrors = {};
-        if (!transactionFormData.amount) newErrors.amount = "Amount is required.";
-        if (!transactionFormData.description) newErrors.description = "Description is required.";
-        if (!transactionFormData.category_id) newErrors.category_id = "Category is required.";
+        if (!transactionFormData.amount) newErrors.amount = "Suma je povinná.";
+        if (!transactionFormData.description) newErrors.description = "Popis je povinný.";
+        if (!transactionFormData.category_id) newErrors.category_id = "Kategória je povinná.";
 
         setErrors({ ...errors, transaction: newErrors });
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -55,9 +55,9 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
     // Validate category form
     const validateCategoryForm = () => {
         const newErrors = {};
-        if (!categoryFormData.name) newErrors.name = "Name is required.";
-        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Budget must be a number.";
-        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Budget musi byt vacsi ako nula"
+        if (!categoryFormData.name) newErrors.name = "Meno je povinné.";
+        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Rozpočet musí byť číslo.";
+        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Rozpočet musí byť vačší ako nula"
 
         setErrors({ ...errors, category: newErrors });
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -68,7 +68,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         if (!validateCategoryForm()) return;
 
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
             const response = await fetch("http://127.0.0.1:8000/api/v1/transaction/category", {
@@ -82,7 +82,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
                 setErrors({ ...errors, category: { name: data.message} });
                 return;
             }
-            
+
             setShowCategoryDialog(false);
             add_category(data.data);
             setTransactionFormData({ ...transactionFormData, category_id: data.data.id });
@@ -96,7 +96,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         if (!validateTransactionForm()) return;
 
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/${transaction.id}`, {
@@ -120,7 +120,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
     // Handle deleting a transaction
     const handleDelete = async () => {
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/${transaction.id}`, {
@@ -166,7 +166,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
             <DialogContent className="bg-gray-800 text-white rounded-md">
                 <DialogHeader>
                     <div className="flex justify-between items-center">
-                        <DialogTitle className="text-lg font-bold">Edit Transaction</DialogTitle>
+                        <DialogTitle className="text-lg font-bold">Upravte Transakciu</DialogTitle>
                         <button
                             onClick={handleDelete}
                             className="text-red-500 hover:text-red-700 transition-colors mr-10 mt-2"
@@ -175,7 +175,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
                         </button>
                     </div>
                     <DialogDescription className="text-sm text-gray-400">
-                        Update your transaction details below.
+                        Aktualizujte podrobnosti transakcie.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -248,14 +248,14 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
                                 className="bg-blue-500 hover:bg-blue-600 transition-colors"
                                 onClick={() => setShowCategoryDialog(true)}
                             >
-                                Create Category
+                                Vytvoriť Kategóriu
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="bg-gray-800 text-white rounded-md">
                             <DialogHeader>
-                                <DialogTitle className="text-lg font-bold">Create Category</DialogTitle>
+                                <DialogTitle className="text-lg font-bold">Vytvoriť Kategóriu</DialogTitle>
                                 <DialogDescription className="text-sm text-gray-400">
-                                    Fill in the details to create a new category.
+                                    Pre vytvorenie Kategórie vyplňte podrobnosti.
                                 </DialogDescription>
                             </DialogHeader>
 
@@ -289,7 +289,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
                                 onClick={handleCreateCategory}
                                 className="bg-blue-500 hover:bg-blue-600 transition-colors mt-4"
                             >
-                                Create Category
+                                Vytvoriť kategóriu
                             </Button>
                         </DialogContent>
                     </Dialog>
@@ -300,7 +300,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
                     onClick={handleSubmit}
                     className="bg-blue-500 hover:bg-blue-600 transition-colors mt-6"
                 >
-                    Update
+                    Upraviť
                 </Button>
             </DialogContent>
         </Dialog>

@@ -10,7 +10,7 @@ import Layout from '@/components/layout';
 import CreateTransactionModal from '@/components/createTransactionModal';
 import EditTransactionModal from '@/components/editTransactionModal';
 import CategoryModalContent from '@/components/categoryModalContent';
-import EditCategoryModalContent from '@/components/editCategoryModal';
+import EditCategoryModal from '@/components/editCategoryModal';
 import { saveAs } from 'file-saver'; // For exporting CSV
 
 ChartJS.register(ArcElement, PieController, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -222,34 +222,23 @@ function TransactionsPage() {
         <Layout>
             <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center p-6 relative">
                 <main className="w-full max-w-5xl p-6">
-                    {/* Header Section */}
                     <header className="w-full grid grid-cols-1 md:grid-cols-4 gap-2 mb-6">
-                        {/* Date Picker */}
                         <div className="bg-gray-800 p-4 rounded-md flex flex-col cursor-pointer">
                             <span className="text-sm text-gray-400">Obdobie Od - Do</span>
                             <DatePicker selected={startDate} onChange={setStartDate} className="bg-gray-700 text-white rounded-md px-2 py-1 mt-2" />
                             <DatePicker selected={endDate} onChange={setEndDate} className="bg-gray-700 text-white rounded-md px-2 py-1 mt-2" />
                         </div>
 
-                        {/* Income */}
-                        <div
-                            className="bg-gray-800 p-4 rounded-md flex flex-col cursor-pointer hover:bg-green-900 transition"
-                            onClick={() => handleFilterChange('income')}
-                        >
+                        <div className="bg-gray-800 p-4 rounded-md flex flex-col cursor-pointer hover:bg-green-900 transition" onClick={() => handleFilterChange('income')}>
                             <span className="text-sm text-gray-400">Príjmy</span>
                             <span className="text-green-500 text-2xl font-bold">+ {data.total_income.toFixed(2)} €</span>
                         </div>
 
-                        {/* Expense */}
-                        <div
-                            className="bg-gray-800 p-4 rounded-md flex flex-col cursor-pointer hover:bg-red-900 transition"
-                            onClick={() => handleFilterChange('expense')}
-                        >
+                        <div className="bg-gray-800 p-4 rounded-md flex flex-col cursor-pointer hover:bg-red-900 transition" onClick={() => handleFilterChange('expense')}>
                             <span className="text-sm text-gray-400">Výdavky</span>
                             <span className="text-red-500 text-2xl font-bold">- {Math.abs(data.total_expence).toFixed(2)} €</span>
                         </div>
 
-                        {/* Difference */}
                         <div className="bg-gray-800 p-6 rounded-md flex flex-col">
                             <span className="text-sm text-gray-400">Rozdiel</span>
                             <span className={`${difference >= 0 ? "text-green-500" : "text-red-500"} text-2xl font-bold`}>
@@ -258,23 +247,12 @@ function TransactionsPage() {
                         </div>
                     </header>
 
-                    {/* Chart Section */}
                     <div className="bg-gray-800 p-6 rounded-md mb-6">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold mb-4 md:mb-0">Chart</h2>
+                            <h2 className="text-lg font-bold mb-4 md:mb-0">Graf</h2>
                             <div className="flex flex-col md:flex-row gap-2">
-                                <button
-                                    onClick={() => setChartType('pie')}
-                                    className={`px-4 py-2 rounded-md ${chartType === 'pie' ? 'bg-blue-500' : 'bg-gray-700'}`}
-                                >
-                                    Pie Chart
-                                </button>
-                                <button
-                                    onClick={() => setChartType('bar')}
-                                    className={`px-4 py-2 rounded-md ${chartType === 'bar' ? 'bg-blue-500' : 'bg-gray-700'}`}
-                                >
-                                    Column Chart
-                                </button>
+                                <button onClick={() => setChartType('pie')} className={`px-4 py-2 rounded-md ${chartType === 'pie' ? 'bg-blue-500' : 'bg-gray-700'}`}>Koláčový graf</button>
+                                <button onClick={() => setChartType('bar')} className={`px-4 py-2 rounded-md ${chartType === 'bar' ? 'bg-blue-500' : 'bg-gray-700'}`}>Stĺpcový graf</button>
                             </div>
                         </div>
                         <div className="relative flex justify-center items-center" style={{ height: '300px' }}>
@@ -290,32 +268,19 @@ function TransactionsPage() {
                         </div>
                     </div>
 
-                    {/* Transactions Table */}
                     <div className="bg-gray-800 p-6 rounded-md mb-6">
                         <div className="radio-inputs-bar flex flex-col md:flex-row justify-between items-center mb-6">
-                            {/* Radio Buttons */}
                             <div className="radio-inputs mb-4 md:mb-0">
                                 <label className="radio">
-                                    <input
-                                        type="radio"
-                                        name="radio"
-                                        checked={view === 'kategorie'}
-                                        onChange={() => setView('kategorie')}
-                                    />
-                                    <span className="name transition-all">Kategorie</span>
+                                    <input type="radio" name="radio" checked={view === 'kategorie'} onChange={() => setView('kategorie')} />
+                                    <span className="name transition-all">Kategórie</span>
                                 </label>
                                 <label className="radio">
-                                    <input
-                                        type="radio"
-                                        name="radio"
-                                        checked={view === 'transakcie'}
-                                        onChange={() => setView('transakcie')}
-                                    />
+                                    <input type="radio" name="radio" checked={view === 'transakcie'} onChange={() => setView('transakcie')} />
                                     <span className="name transition-all">Transakcie</span>
                                 </label>
                             </div>
 
-                            {/* Buttons on the Right */}
                             <div className="flex flex-col md:flex-row gap-4">
                                 <CategoryModalContent fetchTransactionData={fetchTransactionData} categories={categories} refetch={fetchCategories} />
                                 <CreateTransactionModal fetchTransactionData={fetchTransactionData} categories={categories} add_category={(cat) => setCategories([...categories, cat])} />
@@ -323,86 +288,52 @@ function TransactionsPage() {
                         </div>
 
                         {view === 'kategorie' ? (
-                                <>
-                                    <table className="w-full text-left">
-                                        <thead className="bg-gray-700 text-gray-400">
-                                            <tr>
-                                                <th
-                                                    className="p-3 cursor-pointer"
-                                                    onClick={() => handleCategorySort('name')}
-                                                >
-                                                    Kategória {categorySortBy === 'name' && (categorySortDirection === 'asc' ? '▲' : '▼')}
-                                                </th>
-                                                <th
-                                                    className="p-3 cursor-pointer"
-                                                    onClick={() => handleCategorySort('amount')}
-                                                >
-                                                    Suma {categorySortBy === 'amount' && (categorySortDirection === 'asc' ? '▲' : '▼')}
-                                                </th>
-                                                {filter === 'expense' && (
-                                                    <th
-                                                        className="p-3 cursor-pointer"
-                                                        onClick={() => handleCategorySort('budget')}
-                                                    >
-                                                        Monthly Budget {categorySortBy === 'budget' && (categorySortDirection === 'asc' ? '▲' : '▼')}
-                                                    </th>
-                                                )}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {sortedCategories.map(([category, data], index) => (
-                                                <EditCategoryModalContent
-                                                    data={data}
-                                                    category={category}
-                                                    key={index}
-                                                    filter={filter}
-                                                />
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                    <button
-                                        onClick={exportToCSV}
-                                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                                    >
-                                        Export to CSV
-                                    </button>
-                                </>
-                            ) : (
                             <>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left bg-gray-800 rounded-md overflow-hidden">
-                                        <thead className="bg-gray-700 text-gray-400">
-                                            <tr>
-                                                <th className="p-3 cursor-pointer" onClick={() => handleSort('category')}>Kategória {sortBy === 'category' && (sortDirection === 'asc' ? '▲' : '▼')}</th>
-                                                <th className="p-3 cursor-pointer" onClick={() => handleSort('description')}>Popis {sortBy === 'description' && (sortDirection === 'asc' ? '▲' : '▼')}</th>
-                                                <th className="p-3 cursor-pointer" onClick={() => handleSort('date')}>Dátum {sortBy === 'date' && (sortDirection === 'asc' ? '▲' : '▼')}</th>
-                                                <th className="p-3 cursor-pointer" onClick={() => handleSort('amount')}>Suma {sortBy === 'amount' && (sortDirection === 'asc' ? '▲' : '▼')}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {sortedTransactions.map((transaction, index) => (
-                                                <EditTransactionModal
-                                                    key={index}
-                                                    transaction={transaction}
-                                                    categories={categories}
-                                                    add_category={(cat) => setCategories([...categories, cat])}
-                                                    fetchTransactionData={fetchTransactionData}
-                                                />
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <button
-                                    onClick={exportToCSV}
-                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                                >
-                                    Export to CSV
-                                </button>
+                                <table className="w-full text-left">
+                                    <thead className="bg-gray-700 text-gray-400">
+                                        <tr>
+                                            <th className="p-3 cursor-pointer" onClick={() => handleCategorySort('name')}>Kategória {categorySortBy === 'name' && (categorySortDirection === 'asc' ? '▲' : '▼')}</th>
+                                            <th className="p-3 cursor-pointer" onClick={() => handleCategorySort('amount')}>Suma {categorySortBy === 'amount' && (categorySortDirection === 'asc' ? '▲' : '▼')}</th>
+                                            {filter === 'expense' && (
+                                                <th className="p-3 cursor-pointer" onClick={() => handleCategorySort('budget')}>Mesačný rozpočet {categorySortBy === 'budget' && (categorySortDirection === 'asc' ? '▲' : '▼')}</th>
+                                            )}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedCategories.map(([category, data], index) => (
+                                            <EditCategoryModal
+                                            data={data} 
+                                            refetch={fetchTransactionData}
+                                            category={category} 
+                                            key={index} 
+                                            filter={filter} 
+                                            category_id={data.category_id}
+                                        />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        ) : (
+                            <>
+                                <table className="w-full text-left bg-gray-800 rounded-md overflow-hidden">
+                                    <thead className="bg-gray-700 text-gray-400">
+                                        <tr>
+                                            <th className="p-3 cursor-pointer" onClick={() => handleSort('category')}>Kategória</th>
+                                            <th className="p-3 cursor-pointer" onClick={() => handleSort('description')}>Popis</th>
+                                            <th className="p-3 cursor-pointer" onClick={() => handleSort('date')}>Dátum</th>
+                                            <th className="p-3 cursor-pointer" onClick={() => handleSort('amount')}>Suma</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedTransactions.map((transaction, index) => (
+                                            <EditTransactionModal key={index} transaction={transaction} categories={categories} add_category={(cat) => setCategories([...categories, cat])} fetchTransactionData={fetchTransactionData} />
+                                        ))}
+                                    </tbody>
+                                </table>
                             </>
                         )}
                     </div>
                 </main>
-                <footer className="bg-blue-500 h-4"></footer>
             </div>
         </Layout>
     );

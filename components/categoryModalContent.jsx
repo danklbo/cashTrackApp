@@ -30,9 +30,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
         if (!validateCategoryForm()) return;
 
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
-
-        validateCategoryForm();
+        if (!token) throw new Error("Autentifikačný token nebol nájdený.");
 
         const url = editingCategoryId 
             ? `http://127.0.0.1:8000/api/v1/transaction/category/${editingCategoryId}`
@@ -61,7 +59,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
 
     const handleDelete = async (category) => {
         const token = localStorage.getItem('authToken');
-        if (!token) throw new Error("No authentication token found.");
+        if (!token) throw new Error("Autentifikačný token nebol nájdený.");
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/category/${category.id}`, {
                 method: "DELETE",
@@ -79,7 +77,6 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
             setShowFormModal(false); 
             fetchTransactionData()
             } catch (err) {
-            console.error("Error deleting transaction:", err);
         }
     };
 
@@ -101,9 +98,9 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
 
     const validateCategoryForm = () => {
         const newErrors = {};
-        if (!categoryFormData.name) newErrors.name = "Name is required.";
-        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Budget must be a number.";
-        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Budget musi byt vacsi ako nula"
+        if (!categoryFormData.name) newErrors.name = "Meno je povinné.";
+        if (categoryFormData.budget && isNaN(categoryFormData.budget)) newErrors.budget = "Rozpočet musí byť číslo.";
+        if (categoryFormData.budget && categoryFormData.budget < 1) newErrors.budget = "Rozpočet musí byť vačší ako nula"
 
         setErrors({ ...errors, category: newErrors });
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -116,7 +113,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
             <Dialog open={showTableModal} onOpenChange={setShowTableModal}>
                 <DialogTrigger asChild>
                     <Button className="bg-gray-700 hover:bg-gray-600 transition-colors">
-                        Manage Categories
+                        Spravovať Kategórie
                     </Button>
                 </DialogTrigger>
     
@@ -124,9 +121,9 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                     <DialogHeader>
                         <div className="flex justify-between items-center mb-4">
                             <div>
-                                <DialogTitle className="text-lg font-bold">Categories</DialogTitle>
+                                <DialogTitle className="text-lg font-bold">Kategórie</DialogTitle>
                                 <DialogDescription className="text-sm text-gray-400">
-                                    View and manage your categories.
+                                    Zobrazte a spravujte svoje kategórie.
                                 </DialogDescription>
                             </div>
     
@@ -134,7 +131,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                                 className="bg-blue-500 hover:bg-blue-600 transition-colors mr-7"
                                 onClick={handleCreateNewCategory}
                             >
-                                Create New Category
+                                Vytvoriť novú kategóriu
                             </Button>
                         </div>
                     </DialogHeader>
@@ -144,8 +141,8 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                         <table className="w-full bg-gray-700 text-white rounded-md relative">
                             <thead className="bg-gray-600 sticky top-0">
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                                    <th className="px-4 py-3 text-left text-sm font-medium">Budget</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium">Meno</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium">Rozpočet</th>
                                     <th className="px-4 py-3 text-left text-sm font-medium"></th>
                                 </tr>
                             </thead>
@@ -179,12 +176,12 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                 <DialogContent className="bg-gray-800 text-white rounded-md">
                     <DialogHeader>
                         <DialogTitle className="text-lg font-bold">
-                            {editingCategoryId ? 'Edit Category' : 'Create New Category'}
+                            {editingCategoryId ? 'Upravenie Kategórie' : 'Vytvorenie novej Kategórie'}
                         </DialogTitle>
                         <DialogDescription className="text-sm text-gray-400">
                             {editingCategoryId
-                                ? 'Edit the details of the category.'
-                                : 'Fill in the details to create a new category.'}
+                                ? 'Upravte údaje kategórie.'
+                                : 'Vyplňte údaje pre vytvorenie novej kategórie.'}
                         </DialogDescription>
                     </DialogHeader>
     
@@ -192,7 +189,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                     <div>
                         <Input
                             name="name"
-                            placeholder="Name of Your Category"
+                            placeholder="Názov vašej kategórie"
                             value={categoryFormData.name || ""}
                             onChange={(e) => handleInputChange(e.target.name, e.target.value)}
                             className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -206,7 +203,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                         <Input
                             name="budget"
                             type="number"
-                            placeholder="Optional monthly budget for your category"
+                            placeholder="Mesačný rozpočet pre vašu kategóriu (nepovinné pole)"
                             value={categoryFormData.budget || ""}
                             onChange={(e) => handleInputChange(e.target.name, e.target.value)}
                             className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -220,14 +217,14 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
                         onClick={handleCreateOrUpdateCategory}
                         className="bg-blue-500 hover:bg-blue-600 transition-colors mt-4"
                     >
-                        {editingCategoryId ? 'Update Category' : 'Create Category'}
+                        {editingCategoryId ? 'Upraviť' : 'Vytvoriť'}
                     </Button>
                 </DialogContent>
             </Dialog>
             <Dialog open={showErrorModal} onOpenChange={setShowErrorModal}>
                 <DialogContent className="bg-gray-800 text-white rounded-md">
                     <DialogHeader>
-                        <DialogTitle className="text-lg font-bold">Category has transactions</DialogTitle>
+                        <DialogTitle className="text-lg font-bold">Kategória má priradené transakcie</DialogTitle>
                     </DialogHeader>
                     <p className="text-red-500 text-sm mt-1">{errors.delete_category.message}</p>
                     <Button
