@@ -297,25 +297,35 @@ function TransactionsPage() {
                         </div>
 
                         {view === 'kategorie' ? (
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-700 text-gray-400">
-                                    <tr>
-                                        <th className="p-3">Kategória</th>
-                                        <th className="p-3">Suma</th>
-                                        {filter === 'expense' && <th className="p-3">Monthly Budget</th>}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Object.entries(chartData || {}).map(([category, data], index) => (
-                                        <EditCategoryModalContent
-                                            data={data}
-                                            category={category}
-                                            key={index}
-                                            filter={filter}
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
+                            <>
+                                <table className="w-full text-left">
+                                    <thead className="bg-gray-700 text-gray-400">
+                                        <tr>
+                                            <th className="p-3">Kategória</th>
+                                            <th className="p-3">Suma</th>
+                                            {filter === 'expense' && <th className="p-3">Monthly Budget</th>}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {Object.entries(chartData || {}).map(([category, data], index) => (
+                                            <EditCategoryModalContent
+                                                data={data}
+                                                category={category}
+                                                key={index}
+                                                filter={filter}
+                                            />
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <button
+                                    onClick={exportToCSV}
+                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                    >
+                                    Export to CSV
+                                </button>
+
+                            </>
+                            
                         ) : (
                             <>
                                 <div className="overflow-x-auto">
