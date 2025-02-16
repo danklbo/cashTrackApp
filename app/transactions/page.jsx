@@ -57,7 +57,6 @@ function TransactionsPage() {
                 filter === 'income' ? transaction.type === 'income' :
                 filter === 'expense' ? transaction.type === 'expense' : true
             );
-
             setFilteredTransactions(filtered);
             setChartData(data.chart_data[filter]);
         } catch (err) {
