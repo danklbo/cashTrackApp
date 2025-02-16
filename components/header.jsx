@@ -85,13 +85,13 @@ const Header = () => {
                             onClick={() => handleTabClick('/')}
                             className="hover:text-gray-400"
                         >
-                            Blogs
+                            Blogy
                         </button>
                         <button
                             onClick={() => handleTabClick('/transactions')}
                             className="hover:text-gray-400"
                         >
-                            Transactions
+                            Transakcie
                         </button>
                         <button
                             onClick={() => handleTabClick('/about')}
