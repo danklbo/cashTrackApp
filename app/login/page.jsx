@@ -28,8 +28,6 @@ export default function LoginPage() {
         throw new Error(data.error);
       }
 
-      console.log('Login successful:', data);
-
       // Store the token in localStorage
       localStorage.setItem('authToken', data.data.token);
 

@@ -35,7 +35,7 @@ export default function RegisterPage() {
       });
 
       const data = await response.json();
-      console.log(data);
+
       if (!response.ok) {
         // Handle backend validation errors
         if (data.error) {
@@ -45,8 +45,6 @@ export default function RegisterPage() {
         }
         return;
       }
-
-      console.log('Registration successful:', data);
 
       // Store the token in localStorage
       localStorage.setItem('authToken', data.data.token);
