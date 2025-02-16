@@ -25,6 +25,8 @@ function TransactionsPage() {
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('date');
     const [sortDirection, setSortDirection] = useState('desc');
+    const [categorySortBy, setCategorySortBy] = useState('name'); // 'name', 'amount', 'budget'
+    const [categorySortDirection, setCategorySortDirection] = useState('asc'); // 'asc', 'desc'
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [chartData, setChartData] = useState({});
     const [chartType, setChartType] = useState('bar');
@@ -97,6 +99,20 @@ function TransactionsPage() {
         });
     }, [filteredTransactions, sortBy, sortDirection]);
 
+    const sortedCategories = useMemo(() => {
+        return Object.entries(chartData || {}).sort(([categoryA, dataA], [categoryB, dataB]) => {
+            if (categorySortBy === 'name') {
+                return categorySortDirection === 'asc' ? categoryA.localeCompare(categoryB) : categoryB.localeCompare(categoryA);
+            } else if (categorySortBy === 'amount') {
+                return categorySortDirection === 'asc' ? dataA.total_amount - dataB.total_amount : dataB.total_amount - dataA.total_amount;
+            } else if (categorySortBy === 'budget' && filter === 'expense') {
+                return categorySortDirection === 'asc' ? (dataA.budget || 0) - (dataB.budget || 0) : (dataB.budget || 0) - (dataA.budget || 0);
+            }
+            return 0;
+        });
+    }, [chartData, categorySortBy, categorySortDirection, filter]);
+    
+
     const handleSort = (field) => {
         if (sortBy === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -105,6 +121,16 @@ function TransactionsPage() {
             setSortDirection('desc');
         }
     };
+
+    const handleCategorySort = (field) => {
+        if (categorySortBy === field) {
+            setCategorySortDirection(categorySortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            setCategorySortBy(field);
+            setCategorySortDirection('asc');
+        }
+    };
+    
 
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
@@ -297,36 +323,51 @@ function TransactionsPage() {
                         </div>
 
                         {view === 'kategorie' ? (
-                            <>
-                                <table className="w-full text-left">
-                                    <thead className="bg-gray-700 text-gray-400">
-                                        <tr>
-                                            <th className="p-3">Kategória</th>
-                                            <th className="p-3">Suma</th>
-                                            {filter === 'expense' && <th className="p-3">Monthly Budget</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {Object.entries(chartData || {}).map(([category, data], index) => (
-                                            <EditCategoryModalContent
-                                                data={data}
-                                                category={category}
-                                                key={index}
-                                                filter={filter}
-                                            />
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <button
-                                    onClick={exportToCSV}
-                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                <>
+                                    <table className="w-full text-left">
+                                        <thead className="bg-gray-700 text-gray-400">
+                                            <tr>
+                                                <th
+                                                    className="p-3 cursor-pointer"
+                                                    onClick={() => handleCategorySort('name')}
+                                                >
+                                                    Kategória {categorySortBy === 'name' && (categorySortDirection === 'asc' ? '▲' : '▼')}
+                                                </th>
+                                                <th
+                                                    className="p-3 cursor-pointer"
+                                                    onClick={() => handleCategorySort('amount')}
+                                                >
+                                                    Suma {categorySortBy === 'amount' && (categorySortDirection === 'asc' ? '▲' : '▼')}
+                                                </th>
+                                                {filter === 'expense' && (
+                                                    <th
+                                                        className="p-3 cursor-pointer"
+                                                        onClick={() => handleCategorySort('budget')}
+                                                    >
+                                                        Monthly Budget {categorySortBy === 'budget' && (categorySortDirection === 'asc' ? '▲' : '▼')}
+                                                    </th>
+                                                )}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {sortedCategories.map(([category, data], index) => (
+                                                <EditCategoryModalContent
+                                                    data={data}
+                                                    category={category}
+                                                    key={index}
+                                                    filter={filter}
+                                                />
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <button
+                                        onClick={exportToCSV}
+                                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
                                     >
-                                    Export to CSV
-                                </button>
-
-                            </>
-                            
-                        ) : (
+                                        Export to CSV
+                                    </button>
+                                </>
+                            ) : (
                             <>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left bg-gray-800 rounded-md overflow-hidden">
