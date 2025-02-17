@@ -144,7 +144,7 @@ function TransactionsPage() {
             },
             title: {
                 display: true,
-                text: `Total ${filter === 'income' ? 'Income' : 'Expense'} by Category`,
+                text: `${filter === 'income' ? 'Celkový Príjem' : 'Celkové Výdavky'} podľa Kategórie`,
             },
         },
         scales: chartType === 'bar' && filter === 'expense' ? {
@@ -159,7 +159,7 @@ function TransactionsPage() {
 
     const datasets = [
         {
-            label: `Total ${filter === 'income' ? 'Income' : 'Expense'}`,
+            label: `${filter === 'income' ? 'Celkový Príjem' : 'Celkové Výdavky'}`,
             data: Object.values(chartData || {}).map(category => Math.abs(category.total_amount)),
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -184,7 +184,7 @@ function TransactionsPage() {
 
     if (chartType === 'bar' && filter === 'expense') {
         datasets.push({
-            label: 'Category Budget',
+            label: 'Rozpočet',
             data: Object.values(chartData || {}).map(category => category.budget ? category.budget : null),
             backgroundColor: datasets[0].backgroundColor.map(color => color.replace(/[\d\.]+\)$/, '0.05)')),
             borderColor: datasets[0].borderColor.map(color => color.replace(/[\d\.]+\)$/, '0.3)')),
