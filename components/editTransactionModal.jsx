@@ -100,7 +100,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
 
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/${transaction.id}`, {
-                method: "PUT", // Use PUT for updates
+                method: "POST",
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(transactionFormData),
             });

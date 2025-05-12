@@ -32,7 +32,7 @@ function AboutPage() {
         <Layout>
             <div className="bg-gray-900 text-white min-h-screen p-6">
                 <main className="w-full max-w-5xl mx-auto">
-                    <h1 className="text-3xl font-bold mb-6">O nás</h1>
+                    <h1 className="text-3xl font-bold mb-6">O Aplikácií</h1>
 
                     {/* Guide Section */}
                     <section className="mb-8">

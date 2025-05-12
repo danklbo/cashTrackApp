@@ -312,6 +312,12 @@ function TransactionsPage() {
                                         ))}
                                     </tbody>
                                 </table>
+                                <button
+                                    onClick={exportToCSV}
+                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                    >
+                                    Export do CSV
+                                </button>
                             </>
                         ) : (
                             <>
@@ -330,6 +336,12 @@ function TransactionsPage() {
                                         ))}
                                     </tbody>
                                 </table>
+                                <button
+                                    onClick={exportToCSV}
+                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                    >
+                                    Export do CSV
+                                </button>
                             </>
                         )}
                     </div>
