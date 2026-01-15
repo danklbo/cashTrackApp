@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import React, { useState, useEffect } from 'react';
+import { buildApiUrl } from '@/lib/api';
 
 const EditCategoryModal = ({ data, refetch, category, filter }) => {
     const [showFormModal, setShowFormModal] = useState(false);
@@ -38,7 +39,7 @@ const EditCategoryModal = ({ data, refetch, category, filter }) => {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/category/${data.id}`, {
+        const response = await fetch(buildApiUrl(`/api/v1/transaction/category/${data.id}`), {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(categoryFormData),

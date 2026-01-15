@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import React, { useState, useEffect } from 'react';
 import { TrashIcon } from 'lucide-react';
+import { buildApiUrl } from '@/lib/api';
 
 
 const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => {
@@ -33,8 +34,8 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
         if (!token) throw new Error("Autentifikačný token nebol nájdený.");
 
         const url = editingCategoryId 
-            ? `http://127.0.0.1:8000/api/v1/transaction/category/${editingCategoryId}`
-            : 'http://127.0.0.1:8000/api/v1/transaction/category';
+            ? buildApiUrl(`/api/v1/transaction/category/${editingCategoryId}`)
+            : buildApiUrl('/api/v1/transaction/category');
 
         const response = await fetch(url, {
             method: 'POST',
@@ -61,7 +62,7 @@ const CategoryModalContent = ({ fetchTransactionData, categories, refetch }) => 
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error("Autentifikačný token nebol nájdený.");
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/category/${category.id}`, {
+            const response = await fetch(buildApiUrl(`/api/v1/transaction/category/${category.id}`), {
                 method: "DELETE",
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             });

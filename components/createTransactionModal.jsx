@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import React, { useState } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
+import { buildApiUrl } from '@/lib/api';
 
 const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_category }) => {
     const [showCategoryDialog, setShowCategoryDialog] = useState(false);
@@ -66,7 +67,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/v1/transaction/category", {
+            const response = await fetch(buildApiUrl('/api/v1/transaction/category'), {
                 method: "POST",
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(categoryFormData),
@@ -92,7 +93,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
-        fetch("http://127.0.0.1:8000/api/v1/transaction", {
+        fetch(buildApiUrl('/api/v1/transaction'), {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(transactionFormData)

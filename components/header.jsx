@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link'; // If using Next.js, otherwise use your preferred routing library
 import { useRouter } from 'next/navigation';
 import { CircleUserRound, Menu, X } from 'lucide-react'; 
+import { buildApiUrl } from '@/lib/api';
 
 const Header = () => {
     const router = useRouter();
@@ -26,7 +27,7 @@ const Header = () => {
         if (!token) return;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/auth/info', {
+            const response = await fetch(buildApiUrl('/api/v1/auth/info'), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -43,7 +44,7 @@ const Header = () => {
         }
     };
 
-    // Handle tab click (Blogs or Transactions)
+    // Handle tab click (Transactions)
     const handleTabClick = (path) => {
         if (isAuthenticated()) {
             router.push(path);
@@ -82,19 +83,13 @@ const Header = () => {
                     {/* Tabs - Hidden on mobile */}
                     <nav className="hidden md:flex space-x-6">
                         <button
-                            onClick={() => handleTabClick('/')}
-                            className="hover:text-gray-400"
-                        >
-                            Blogy
-                        </button>
-                        <button
                             onClick={() => handleTabClick('/transactions')}
                             className="hover:text-gray-400"
                         >
                             Transakcie
                         </button>
                         <button
-                            onClick={() => handleTabClick('/about')}
+                            onClick={() => router.push('/about')}
                             className="hover:text-gray-400"
                         >
                             O Aplikácii
@@ -126,15 +121,6 @@ const Header = () => {
             {isMobileMenuOpen && (
                 <div className="md:hidden bg-gray-700">
                     <nav className="flex flex-col space-y-4 p-4">
-                        <button
-                            onClick={() => {
-                                handleTabClick('/');
-                                setIsMobileMenuOpen(false);
-                            }}
-                            className="hover:text-gray-400"
-                        >
-                            Blogs
-                        </button>
                         <button
                             onClick={() => {
                                 handleTabClick('/transactions');

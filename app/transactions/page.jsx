@@ -12,6 +12,7 @@ import EditTransactionModal from '@/components/editTransactionModal';
 import CategoryModalContent from '@/components/categoryModalContent';
 import EditCategoryModal from '@/components/editCategoryModal';
 import { saveAs } from 'file-saver'; // For exporting CSV
+import { buildApiUrl } from '@/lib/api';
 
 ChartJS.register(ArcElement, PieController, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -40,26 +41,32 @@ function TransactionsPage() {
             const token = localStorage.getItem('authToken');
             if (!token) throw new Error("No authentication token found.");
 
-            const url = new URL('http://127.0.0.1:8000/api/v1/transactions');
+            const url = new URL(buildApiUrl('/api/v1/transactions'));
             if (startDate) url.searchParams.set('from', format(startDate, 'yyyy-MM-dd'));
             if (endDate) url.searchParams.set('to', format(endDate, 'yyyy-MM-dd'));
 
-            const response = await fetch(url, {
+            const response = await fetch(url.toString(), {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             });
             if (!response.ok) throw new Error('Failed to fetch transactions');
 
-            const data = await response.json();
-            setData(data);
-            setDifference(data.total_expence + data.total_income);
+            const payload = await response.json();
+            const transactions = Array.isArray(payload.transactions)
+                ? payload.transactions
+                : payload.transactions?.data || [];
+            const chartDataByType = payload.chart_data || {};
+            const normalizedData = { ...payload, transactions, chart_data: chartDataByType };
 
-            const filtered = data.transactions.filter(transaction =>
+            setData(normalizedData);
+            setDifference(normalizedData.total_expence + normalizedData.total_income);
+
+            const filtered = transactions.filter(transaction =>
                 filter === 'income' ? transaction.type === 'income' :
                 filter === 'expense' ? transaction.type === 'expense' : true
             );
             
             setFilteredTransactions(filtered);
-            setChartData(data.chart_data[filter]);
+            setChartData(chartDataByType[filter] || {});
         } catch (err) {
             setError(err.message);
         } finally {
@@ -71,7 +78,7 @@ function TransactionsPage() {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error("No authentication token found.");
 
-        const response = await fetch('http://127.0.0.1:8000/api/v1/transaction/categories', {
+        const response = await fetch(buildApiUrl('/api/v1/transaction/categories'), {
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         });
 
