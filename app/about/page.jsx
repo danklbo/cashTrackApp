@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout';
+import { buildApiUrl } from '@/lib/api';
 function AboutPage() {
     const [statistics, setStatistics] = useState({ users: 0, transactions: 0 });
     const [loading, setLoading] = useState(true);
@@ -10,7 +11,7 @@ function AboutPage() {
     useEffect(() => {
         const fetchStatistics = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/v1/statistics');
+                const response = await fetch(buildApiUrl('/api/v1/statistics'));
                 if (!response.ok) throw new Error('Failed to fetch statistics');
 
                 const data = await response.json();
@@ -42,7 +43,6 @@ function AboutPage() {
                                 Vitajte v našej aplikácii na správu financií! Tu je stručný návod, ako používať jej sekcie:
                             </p>
 
-                            <h3 className="mb-3">Blogy</h3>
                             <ul className="list-disc list-inside">
                                 <li>Vzdelávacia sekcia s článkami na zlepšenie finančnej gramotnosti.</li>
                             </ul>
@@ -65,10 +65,6 @@ function AboutPage() {
                             <div className="bg-gray-800 p-6 rounded-md">
                                 <h3 className="text-lg font-semibold">Celkový Počet Užívateľov</h3>
                                 <p className="text-2xl font-bold text-blue-500">{statistics.user_count}</p>
-                            </div>
-                            <div className="bg-gray-800 p-6 rounded-md">
-                                <h3 className="text-lg font-semibold">Celkový Počet Blogov</h3>
-                                <p className="text-2xl font-bold text-green-500">{statistics.blog_count}</p>
                             </div>
                             <div className="bg-gray-800 p-6 rounded-md">
                                 <h3 className="text-lg font-semibold">Celkový Počet Transakcií</h3>

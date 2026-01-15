@@ -4,10 +4,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { buildApiUrl } from '@/lib/api';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
+  const [first_name, setFirstName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({}); // Store field-specific errors
@@ -26,12 +27,12 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/v1/auth/signup', {
+      const response = await fetch(buildApiUrl('/api/v1/auth/signup'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, username, password, password_confirmation: confirmPassword }),
+        body: JSON.stringify({ email, first_name, password, password_confirmation: confirmPassword }),
       });
 
       const data = await response.json();
@@ -88,19 +89,19 @@ export default function RegisterPage() {
 
                 {/* Username Input */}
                 <div>
-                    <label htmlFor="username" className="block text-gray-400 font-medium mb-1">
+                    <label htmlFor="first_name" className="block text-gray-400 font-medium mb-1">
                         Username:
                     </label>
                     <input
                         type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        id="first_name"
+                        value={first_name}
+                        onChange={(e) => setFirstName(e.target.value)}
                         required
                         className="w-full bg-gray-700 text-white border border-gray-600 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    {errors.username && (
-                        <p className="text-red-500 text-sm mt-1">{errors.username.join(' ')}</p>
+                    {errors.first_name && (
+                        <p className="text-red-500 text-sm mt-1">{errors.first_name.join(' ')}</p>
                     )}
                 </div>
 

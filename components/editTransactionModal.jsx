@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from 'date-fns';
 import { TrashIcon } from 'lucide-react';
+import { buildApiUrl } from '@/lib/api';
 
 const EditTransactionModal = ({ transaction, fetchTransactionData, categories, add_category }) => {
     const [showDialog, setShowDialog] = useState(false);
@@ -71,7 +72,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/v1/transaction/category", {
+            const response = await fetch(buildApiUrl('/api/v1/transaction/category'), {
                 method: "POST",
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(categoryFormData),
@@ -99,7 +100,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/${transaction.id}`, {
+            const response = await fetch(buildApiUrl(`/api/v1/transaction/${transaction.id}`), {
                 method: "POST",
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(transactionFormData),
@@ -123,7 +124,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/transaction/${transaction.id}`, {
+            const response = await fetch(buildApiUrl(`/api/v1/transaction/${transaction.id}`), {
                 method: "DELETE",
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             });
