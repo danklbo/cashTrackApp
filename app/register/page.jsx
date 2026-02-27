@@ -50,7 +50,7 @@ export default function RegisterPage() {
       // Store the token in localStorage
       localStorage.setItem('authToken', data.data.token);
 
-      router.push('/transactions');
+      router.push('/');
     } catch (err) {
       setErrors({ general: [err.message || 'An error occurred during registration.'] });
     }

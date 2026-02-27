@@ -32,7 +32,7 @@ export default function LoginPage() {
       // Store the token in localStorage
       localStorage.setItem('authToken', data.data.token);
 
-      router.push('/transactions');
+      router.push('/');
     } catch (err) {
       setError(err.message || 'An error occurred during login.');
     }
