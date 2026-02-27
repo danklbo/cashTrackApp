@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { TrashIcon } from 'lucide-react';
 import { buildApiUrl } from '@/lib/api';
 
-const EditTransactionModal = ({ transaction, fetchTransactionData, categories, add_category }) => {
+const EditTransactionModal = ({ transaction, fetchTransactionData, categories, add_category, compactRow = false }) => {
     const [showDialog, setShowDialog] = useState(false);
     const [showCategoryDialog, setShowCategoryDialog] = useState(false);
     const [transactionFormData, setTransactionFormData] = useState({
@@ -155,7 +155,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
                 <tr className="border-b border-gray-700 cursor-pointer hover:bg-gray-700 transition">
-                    <td className="p-3">{transaction.category.name}</td>
+                    {!compactRow && <td className="p-3">{transaction.category.name}</td>}
                     <td className="p-3">{transaction.description}</td>
                     <td className="p-3">{format(new Date(transaction.date), 'yyyy-MM-dd')}</td>
                     <td className={`p-3 font-bold ${transaction.amount >= 0 ? 'text-green-500' : 'text-red-500'}`}>

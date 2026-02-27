@@ -14,6 +14,7 @@ import EditCategoryModal from '@/components/editCategoryModal';
 import { saveAs } from 'file-saver'; // For exporting CSV
 import { buildApiUrl } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import ImportTransactionsModal from '@/components/importTransactionsModal';
 
 
 ChartJS.register(ArcElement, PieController, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -318,16 +319,27 @@ function MainPage() {
                                             key={index} 
                                             filter={filter} 
                                             category_id={data.category_id}
+                                            transactions={filteredTransactions}
+                                            fetchTransactionData={fetchTransactionData}
+                                            categories={categories}
+                                            add_category={(cat) => setCategories([...categories, cat])}
+                                            refetchCategories={fetchCategories}
                                         />
                                         ))}
                                     </tbody>
                                 </table>
-                                <button
-                                    onClick={exportToCSV}
-                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                                    >
-                                    Export do CSV
-                                </button>
+                                <div className="mt-4 flex flex-col md:flex-row gap-2">
+                                    <button
+                                        onClick={exportToCSV}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                        >
+                                        Export do CSV
+                                    </button>
+                                    <ImportTransactionsModal 
+                                        fetchTransactionData={fetchTransactionData}
+                                        triggerClassName="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                    />
+                                </div>
                             </>
                         ) : (
                             <>
@@ -346,12 +358,18 @@ function MainPage() {
                                         ))}
                                     </tbody>
                                 </table>
-                                <button
-                                    onClick={exportToCSV}
-                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                                    >
-                                    Export do CSV
-                                </button>
+                                <div className="mt-4 flex flex-col md:flex-row gap-2">
+                                    <button
+                                        onClick={exportToCSV}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                        >
+                                        Export do CSV
+                                    </button>
+                                    <ImportTransactionsModal 
+                                        fetchTransactionData={fetchTransactionData}
+                                        triggerClassName="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                    />
+                                </div>
                             </>
                         )}
                     </div>
