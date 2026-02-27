@@ -83,7 +83,7 @@ const Header = () => {
                     {/* Tabs - Hidden on mobile */}
                     <nav className="hidden md:flex space-x-6">
                         <button
-                            onClick={() => handleTabClick('/transactions')}
+                            onClick={() => handleTabClick('/')}
                             className="hover:text-gray-400"
                         >
                             Transakcie
@@ -123,7 +123,7 @@ const Header = () => {
                     <nav className="flex flex-col space-y-4 p-4">
                         <button
                             onClick={() => {
-                                handleTabClick('/transactions');
+                                handleTabClick('/');
                                 setIsMobileMenuOpen(false);
                             }}
                             className="hover:text-gray-400"
