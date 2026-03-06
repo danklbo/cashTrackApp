@@ -150,10 +150,10 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
         setTransactionFormData({
             amount: transaction.amount,
             currency: transaction.currency || 'EUR',
-            in_eur: transaction.in_eur ?? amount,
+            in_eur: transaction.in_eur ?? transaction.amount,
             description: transaction.description,
             date: format(new Date(transaction.date), 'yyyy-MM-dd'),
-            category_id: transaction.category.id,
+            category_id: transaction.category?.id,
         });
     }, [transaction]);
 
