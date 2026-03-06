@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { buildApiUrl } from '@/lib/api';
 import EditTransactionModal from './editTransactionModal';
 
@@ -17,11 +17,36 @@ const EditCategoryModal = ({ data, category, filter, transactions = [], fetchTra
         category: {}
     });
 
+    const resolvedCategory = useMemo(() => {
+        const normalizedCategory = (category || '').trim().toLowerCase();
+
+        return categories.find((item) => (item.name || '').trim().toLowerCase() === normalizedCategory) || null;
+    }, [categories, category]);
+
+    useEffect(() => {
+        if (!showFormModal) {
+            setCategoryFormData({
+                name: resolvedCategory?.name || category,
+                budget: resolvedCategory?.budget ?? data.budget ?? "",
+            });
+            setErrors({ category: {} });
+        }
+    }, [showFormModal, resolvedCategory, category, data.budget]);
+
     const categoryTransactions = useMemo(() => {
+        const resolvedCategoryId = resolvedCategory?.id;
+        const normalizedCategory = (category || '').trim().toLowerCase();
+
         return transactions
-            .filter((transaction) => (transaction.category?.name || '') === category)
+            .filter((transaction) => {
+                if (resolvedCategoryId && transaction.category?.id) {
+                    return Number(transaction.category.id) === Number(resolvedCategoryId);
+                }
+
+                return ((transaction.category?.name || '').trim().toLowerCase()) === normalizedCategory;
+            })
             .sort((a, b) => new Date(b.date) - new Date(a.date));
-    }, [transactions, category]);
+    }, [transactions, category, resolvedCategory]);
 
     const handleInputChange = (name, value) => {
         setCategoryFormData({ ...categoryFormData, [name]: value });
@@ -42,10 +67,15 @@ const EditCategoryModal = ({ data, category, filter, transactions = [], fetchTra
     const handleEditCategory = async () => {
         if (!validateCategoryForm()) return;
 
+        if (!resolvedCategory?.id) {
+            setErrors({ ...errors, category: { name: 'Kategóriu sa nepodarilo načítať.' } });
+            return;
+        }
+
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error("Nebol nájdený autentifikačný token.");
 
-        const response = await fetch(buildApiUrl(`/api/v1/transaction/category/${data.id}`), {
+        const response = await fetch(buildApiUrl(`/api/v1/transaction/category/${resolvedCategory.id}`), {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(categoryFormData),

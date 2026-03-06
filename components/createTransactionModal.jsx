@@ -9,10 +9,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { buildApiUrl } from '@/lib/api';
 
 const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_category }) => {
+    const currencyOptions = ['EUR', 'DKK', 'USD', 'GBP', 'CZK', 'PLN', 'SEK', 'NOK'];
     const [showCategoryDialog, setShowCategoryDialog] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [transactionFormData, setTransactionFormData] = useState({
         amount: "",
+        currency: "EUR",
         description: "",
         date: new Date().toISOString().split('T')[0], //ocakavany format pre dateinput
         category_id: ""
@@ -43,6 +45,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
     const validateTransactionForm = () => {
         const newErrors = {};
         if (!transactionFormData.amount) newErrors.amount = "Suma je povinná.";
+        if (!transactionFormData.currency) newErrors.currency = "Mena je povinná.";
         if (!transactionFormData.description) newErrors.description = "Popis je povinný.";
         if (!transactionFormData.category_id) newErrors.category_id = "Kategória je povinná.";
 
@@ -104,6 +107,7 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
 
         setTransactionFormData({
             amount: "",
+            currency: "EUR",
             description: "",
             date: new Date().toISOString().split('T')[0],
             category_id: ""
@@ -126,17 +130,47 @@ const CreateTransactionModalContent = ({ fetchTransactionData, categories, add_c
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Amount Input */}
-                <div>
-                    <Input
-                        name="amount"
-                        type="number"
-                        placeholder="Suma"
-                        value={transactionFormData.amount}
-                        onChange={(e) => handleInputChange(e.target.name, e.target.value)}
-                        className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {errors.transaction.amount && <p className="text-red-500 text-sm mt-1">{errors.transaction.amount}</p>}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <Input
+                            name="amount"
+                            type="number"
+                            placeholder="Suma"
+                            value={transactionFormData.amount}
+                            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+                            className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {errors.transaction.amount && <p className="text-red-500 text-sm mt-1">{errors.transaction.amount}</p>}
+                    </div>
+
+                    <div>
+                        <Select value={transactionFormData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+                            <SelectTrigger className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <SelectValue placeholder="Mena" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-700 text-white rounded-md">
+                                {currencyOptions.map((currency) => (
+                                    <SelectItem
+                                        key={currency}
+                                        value={currency}
+                                        className="hover:bg-gray-700 transition-colors"
+                                    >
+                                        {currency}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.transaction.currency && <p className="text-red-500 text-sm mt-1">{errors.transaction.currency}</p>}
+                    </div>
+
+                    <div>
+                        <Input
+                            value=""
+                            disabled
+                            placeholder="Vypočíta sa po uložení"
+                            className="bg-gray-600 text-gray-300 border border-gray-500 rounded-md px-3 py-2"
+                        />
+                    </div>
                 </div>
 
                 {/* Description Input */}

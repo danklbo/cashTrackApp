@@ -11,10 +11,13 @@ import { TrashIcon } from 'lucide-react';
 import { buildApiUrl } from '@/lib/api';
 
 const EditTransactionModal = ({ transaction, fetchTransactionData, categories, add_category, compactRow = false }) => {
+    const currencyOptions = ['EUR', 'DKK', 'USD', 'GBP', 'CZK', 'PLN', 'SEK', 'NOK'];
     const [showDialog, setShowDialog] = useState(false);
     const [showCategoryDialog, setShowCategoryDialog] = useState(false);
     const [transactionFormData, setTransactionFormData] = useState({
         amount: "",
+        currency: "EUR",
+        in_eur: "",
         description: "",
         date: "",
         category_id: "",
@@ -46,6 +49,7 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
     const validateTransactionForm = () => {
         const newErrors = {};
         if (!transactionFormData.amount) newErrors.amount = "Suma je povinná.";
+        if (!transactionFormData.currency) newErrors.currency = "Mena je povinná.";
         if (!transactionFormData.description) newErrors.description = "Popis je povinný.";
         if (!transactionFormData.category_id) newErrors.category_id = "Kategória je povinná.";
 
@@ -145,21 +149,25 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
     useEffect(() => {
         setTransactionFormData({
             amount: transaction.amount,
+            currency: transaction.currency || 'EUR',
+            in_eur: transaction.in_eur ?? amount,
             description: transaction.description,
             date: format(new Date(transaction.date), 'yyyy-MM-dd'),
             category_id: transaction.category.id,
         });
     }, [transaction]);
 
+    const displayAmount = typeof transaction.in_eur === 'number' ? transaction.in_eur : Number(transaction.amount || 0);
+
     return (
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
                 <tr className="border-b border-gray-700 cursor-pointer hover:bg-gray-700 transition">
-                    {!compactRow && <td className="p-3">{transaction.category.name}</td>}
+                    {!compactRow && <td className="p-3">{transaction.category?.name || '-'}</td>}
                     <td className="p-3">{transaction.description}</td>
                     <td className="p-3">{format(new Date(transaction.date), 'yyyy-MM-dd')}</td>
-                    <td className={`p-3 font-bold ${transaction.amount >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {transaction.amount >= 0 ? '+' : '-'} {Math.abs(transaction.amount).toFixed(2)} €
+                    <td className={`p-3 font-bold ${displayAmount >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {displayAmount >= 0 ? '+' : '-'} {Math.abs(displayAmount).toFixed(2)} €
                     </td>
                 </tr>
             </DialogTrigger>
@@ -180,17 +188,47 @@ const EditTransactionModal = ({ transaction, fetchTransactionData, categories, a
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Amount Input */}
-                <div>
-                    <Input
-                        name="amount"
-                        type="number"
-                        placeholder="Amount"
-                        value={transactionFormData.amount}
-                        onChange={(e) => handleInputChange(e.target.name, e.target.value)}
-                        className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {errors.transaction.amount && <p className="text-red-500 text-sm mt-1">{errors.transaction.amount}</p>}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <Input
+                            name="amount"
+                            type="number"
+                            placeholder="Suma"
+                            value={transactionFormData.amount}
+                            onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+                            className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {errors.transaction.amount && <p className="text-red-500 text-sm mt-1">{errors.transaction.amount}</p>}
+                    </div>
+
+                    <div>
+                        <Select value={transactionFormData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+                            <SelectTrigger className="bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <SelectValue placeholder="Mena" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-700 text-white rounded-md">
+                                {currencyOptions.map((currency) => (
+                                    <SelectItem
+                                        key={currency}
+                                        value={currency}
+                                        className="hover:bg-gray-600 transition-colors"
+                                    >
+                                        {currency}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.transaction.currency && <p className="text-red-500 text-sm mt-1">{errors.transaction.currency}</p>}
+                    </div>
+
+                    <div>
+                        <Input
+                            value={transactionFormData.in_eur !== "" && transactionFormData.in_eur !== null ? `${Number(transactionFormData.in_eur).toFixed(2)} €` : ''}
+                            disabled
+                            placeholder="Po uložení"
+                            className="bg-gray-600 text-gray-300 border border-gray-500 rounded-md px-3 py-2"
+                        />
+                    </div>
                 </div>
 
                 {/* Description Input */}

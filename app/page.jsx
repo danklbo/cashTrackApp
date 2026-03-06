@@ -100,9 +100,13 @@ function MainPage() {
             if (sortBy === 'date') {
                 return sortDirection === 'asc' ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
             } else if (sortBy === 'amount') {
-                return sortDirection === 'asc' ? a.amount - b.amount : b.amount - a.amount;
+                const amountA = typeof a.in_eur === 'number' ? a.in_eur : a.amount;
+                const amountB = typeof b.in_eur === 'number' ? b.in_eur : b.amount;
+                return sortDirection === 'asc' ? amountA - amountB : amountB - amountA;
             } else if (sortBy === 'description') {
-                return sortDirection === 'asc' ? a.category.name.localeCompare(b.category.name) : b.category.name.localeCompare(a.category.name);
+                const categoryA = a.category?.name || '';
+                const categoryB = b.category?.name || '';
+                return sortDirection === 'asc' ? categoryA.localeCompare(categoryB) : categoryB.localeCompare(categoryA);
             } else if (sortBy === 'category') {
                 return sortDirection === 'asc' ? a.description.localeCompare(b.description) : b.description.localeCompare(a.description);
             }
@@ -212,12 +216,14 @@ function MainPage() {
     };
 
     const exportToCSV = () => {
-        const headers = ["Category", "Description", "Date", "Amount"];
+        const headers = ["Category", "Description", "Date", "Amount", "Currency", "In EUR"];
         const rows = sortedTransactions.map(transaction => [
-            transaction.category.name,
+            transaction.category?.name || '-',
             transaction.description,
             format(new Date(transaction.date), 'yyyy-MM-dd'),
-            transaction.amount.toFixed(2),
+            Number(transaction.amount).toFixed(2),
+            transaction.currency || 'EUR',
+            Number(transaction.in_eur ?? transaction.amount).toFixed(2),
         ]);
 
         const csvContent = [
@@ -311,12 +317,12 @@ function MainPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {sortedCategories.map(([category, data], index) => (
+                                        {sortedCategories.map(([category, data]) => (
                                             <EditCategoryModal
                                             data={data} 
                                             refetch={fetchTransactionData}
                                             category={category} 
-                                            key={index} 
+                                            key={`${filter}-${category}`} 
                                             filter={filter} 
                                             category_id={data.category_id}
                                             transactions={filteredTransactions}
